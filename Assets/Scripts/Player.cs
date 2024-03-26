@@ -22,10 +22,13 @@ public class Player : MonoBehaviour
     [SerializeField] private float tiltDegrees;
     private bool isAniTilt = false;
     [SerializeField] private GameObject info;
+    [SerializeField] private GameObject canvas;
+    [SerializeField] private GameObject camera;
+    [SerializeField] private GameObject point;
 
     void Start()
     {
-        
+        canvas.GetComponent<InGameInterface>().SetGivenTime(new int[] { 1, 0 });
     }
 
     // Update is called once per frame
@@ -33,12 +36,13 @@ public class Player : MonoBehaviour
     {
         CheckInput();
         Tilt();
+
+        camera.transform.position = new Vector3(point.transform.position.x, camera.transform.position.y, camera.transform.position.z);
     }
 
 
     private void FixedUpdate()
     {
-
         GetComponent<Rigidbody>().AddForce(direction.x * turnForce, 0, defaultSpeed + direction.y * accelerationForce);
         
     }
@@ -149,6 +153,21 @@ public class Player : MonoBehaviour
         if (Input.GetKeyUp(decelerationButton))
         {
             direction += new Vector2(0, 1);
+        }
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag.Equals("GoldenCoin"))
+        {
+            canvas.GetComponent<InGameInterface>().IncreaseCoinsCount(5);
+            other.gameObject.SetActive(false);
+        }
+        if (other.tag.Equals("SilverCoin"))
+        {
+            canvas.GetComponent<InGameInterface>().IncreaseCoinsCount(1);
+            other.gameObject.SetActive(false);
         }
     }
 }

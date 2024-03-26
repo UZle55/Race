@@ -14,6 +14,6 @@ public class ShadowPlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = new Vector3(transform.position.x, transform.position.y, player.transform.position.z);
+        transform.position = new Vector3(transform.position.x, player.transform.position.y, player.transform.position.z);
     }
 }
