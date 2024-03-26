@@ -6,6 +6,8 @@ public class Car : MonoBehaviour
 {
     [SerializeField] private float defaultSpeed;
     [SerializeField] private GameObject car;
+    [SerializeField] private bool isForwardDirection;
+    [SerializeField] private bool isExample;
 
     void Start()
     {
@@ -21,8 +23,26 @@ public class Car : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!isExample)
+        {
+            if (isForwardDirection)
+            {
+                GetComponent<Rigidbody>().AddForce(0, 0, defaultSpeed);
+            }
+            else
+            {
+                GetComponent<Rigidbody>().AddForce(0, 0, -defaultSpeed);
+            }
+        }
+    }
 
-        GetComponent<Rigidbody>().AddForce(0, 0, defaultSpeed);
-
+    public void Activate(bool isForward)
+    {
+        isForwardDirection = isForward;
+        if (!isForward)
+        {
+            transform.GetChild(0).localEulerAngles += new Vector3(0, 180, 0);
+        }
+        isExample = false;
     }
 }
