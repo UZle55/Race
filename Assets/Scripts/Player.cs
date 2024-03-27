@@ -25,18 +25,31 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject canvas;
     [SerializeField] private GameObject camera;
     [SerializeField] private GameObject point;
+    [SerializeField] private GameObject audioManager;
+    private float endlessModeTime = 0;
 
     void Start()
     {
-        canvas.GetComponent<InGameInterface>().SetGivenTime(new int[] { 1, 0 });
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (RoadManager.IsEndlessMode)
+        {
+            endlessModeTime += Time.deltaTime;
+            if(endlessModeTime > 1)
+            {
+                endlessModeTime--;
+                defaultSpeed += 0.01f;
+                turnForce += 0.0033f;
+            }
+        }
+
+
         CheckInput();
         Tilt();
-
         camera.transform.position = new Vector3(point.transform.position.x, camera.transform.position.y, camera.transform.position.z);
     }
 
@@ -44,7 +57,18 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         GetComponent<Rigidbody>().AddForce(direction.x * turnForce, 0, defaultSpeed + direction.y * accelerationForce);
-        
+        if(direction.y > 0)
+        {
+            audioManager.GetComponent<AudioManager>().PlayMotorFastSound();
+        }
+        else if (direction.y < 0)
+        {
+            audioManager.GetComponent<AudioManager>().PlayMotorSlowSound();
+        }
+        else
+        {
+            audioManager.GetComponent<AudioManager>().PlayMotorMediumSound();
+        }
     }
 
     private void Tilt()
@@ -156,18 +180,23 @@ public class Player : MonoBehaviour
         }
     }
 
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag.Equals("GoldenCoin"))
         {
-            canvas.GetComponent<InGameInterface>().IncreaseCoinsCount(5);
-            other.gameObject.SetActive(false);
-        }
-        if (other.tag.Equals("SilverCoin"))
-        {
             canvas.GetComponent<InGameInterface>().IncreaseCoinsCount(1);
             other.gameObject.SetActive(false);
+            audioManager.GetComponent<AudioManager>().PlayCoinCollectSound();
+        }
+        if (other.tag.Equals("Car"))
+        {
+            canvas.GetComponent<InGameInterface>().Lose(InGameInterface.LoseReason.CarCrash);
+            audioManager.GetComponent<AudioManager>().PlayCrashSound();
+        }
+        if (other.tag.Equals("Fence"))
+        {
+            canvas.GetComponent<InGameInterface>().Lose(InGameInterface.LoseReason.FenceCrash);
+            audioManager.GetComponent<AudioManager>().PlayCrashSound();
         }
     }
 }

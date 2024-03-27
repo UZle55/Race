@@ -6,6 +6,8 @@ TagManager:
   tags:
   - GoldenCoin
   - SilverCoin
+  - Car
+  - Fence
   layers:
   - Default
   - TransparentFX

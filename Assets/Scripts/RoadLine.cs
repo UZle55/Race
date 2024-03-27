@@ -27,28 +27,31 @@ public class RoadLine : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(nextCarSpawnCoordinate <= spawn.transform.position.z)
+        if (!RoadManager.IsTutorial)
         {
-            nextCarSpawnCoordinate = spawn.transform.position.z + distanceBetweenCars;
-            var r = Random.Range(0, 10);
-            if(r > 7)
+            if (nextCarSpawnCoordinate <= spawn.transform.position.z)
             {
-                isReadyToSpawnNextCar = true;
+                nextCarSpawnCoordinate = spawn.transform.position.z + distanceBetweenCars;
+                var r = Random.Range(0, 10);
+                if (r > 7)
+                {
+                    isReadyToSpawnNextCar = true;
+                }
             }
-        }
-        CheckDespawnCar();
+            CheckDespawnCar();
 
-        if (nextCoinSpawnCoordinate <= spawn.transform.position.z)
-        {
-            nextCoinSpawnCoordinate = spawn.transform.position.z + distanceBetweenCoins;
-            var r = Random.Range(0, 10);
-            if (r > 7)
+            if (nextCoinSpawnCoordinate <= spawn.transform.position.z)
             {
-                isReadyToSpawnNextCoin = true;
+                nextCoinSpawnCoordinate = spawn.transform.position.z + distanceBetweenCoins;
+                var r = Random.Range(0, 10);
+                if (r > 7)
+                {
+                    isReadyToSpawnNextCoin = true;
+                }
             }
+            CheckDespawnCoin();
+            RotateCoins();
         }
-        CheckDespawnCoin();
-        RotateCoins();
     }
 
     public void StartNewCar(GameObject car)

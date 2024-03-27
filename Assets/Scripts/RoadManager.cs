@@ -7,15 +7,21 @@ public class RoadManager : MonoBehaviour
     [SerializeField] private GameObject[] roadLines;
     [SerializeField] private GameObject cars;
     [SerializeField] private GameObject goldenCoin;
-    [SerializeField] private GameObject silverCoin;
     [SerializeField] private GameObject clonedCarsFirstSpawn;
     [SerializeField] private GameObject roadPart1;
     [SerializeField] private GameObject roadPart2;
     [SerializeField] private GameObject player;
+    [SerializeField] private GameObject canvas;
     private GameObject carClone;
     private GameObject coinClone;
     private byte currentRoadPartNumber = 1;
     private float t;
+    public static bool IsTutorial { get; private set; }
+    public static bool IsEndlessMode { get; private set; }
+    public static int[] TimeToSet { get; private set; } = new int[] { 0, 0, 0 };
+    public static int CoinsCountAim { get; private set; }
+    public static int CurrentLevelNumber { get; private set; }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,17 +33,20 @@ public class RoadManager : MonoBehaviour
     void Update()
     {
         t += Time.deltaTime;
-        foreach (var roadLine in roadLines)
+        if (!IsTutorial)
         {
-            if (roadLine.GetComponent<RoadLine>().isReadyToSpawnCar())
+            foreach (var roadLine in roadLines)
             {
-                roadLine.GetComponent<RoadLine>().StartNewCar(carClone);
-                CloneNextCar();
-            }
-            if (roadLine.GetComponent<RoadLine>().isReadyToSpawnCoin())
-            {
-                roadLine.GetComponent<RoadLine>().StartNewCoin(coinClone);
-                CloneNextCoin();
+                if (roadLine.GetComponent<RoadLine>().isReadyToSpawnCar())
+                {
+                    roadLine.GetComponent<RoadLine>().StartNewCar(carClone);
+                    CloneNextCar();
+                }
+                if (roadLine.GetComponent<RoadLine>().isReadyToSpawnCoin())
+                {
+                    roadLine.GetComponent<RoadLine>().StartNewCoin(coinClone);
+                    CloneNextCoin();
+                }
             }
         }
         if (t > 1)
@@ -49,22 +58,15 @@ public class RoadManager : MonoBehaviour
 
     private void CloneNextCar()
     {
-        var nextCar = cars.transform.GetChild(0).gameObject;
+        int r = Random.Range(0, cars.transform.childCount);
+        var nextCar = cars.transform.GetChild(r).gameObject;
         carClone = Instantiate(nextCar);
         carClone.transform.position = clonedCarsFirstSpawn.transform.position;
     }
 
     private void CloneNextCoin()
     {
-        var r = Random.Range(0, 10);
-        if(r > 8)
-        {
-            coinClone = Instantiate(goldenCoin);
-        }
-        else
-        {
-            coinClone = Instantiate(silverCoin);
-        }
+        coinClone = Instantiate(goldenCoin);
         coinClone.transform.position = goldenCoin.transform.position;
     }
 
@@ -86,5 +88,19 @@ public class RoadManager : MonoBehaviour
                 currentRoadPartNumber = 1;
             }
         }
+    }
+
+    public static void SetSettings(bool isTutorial, int[] timeToSet, int coinsCountAim, bool isEndless, int levelNumber)
+    {
+        IsTutorial = isTutorial;
+        TimeToSet = timeToSet;
+        CoinsCountAim = coinsCountAim;
+        IsEndlessMode = isEndless;
+        CurrentLevelNumber = levelNumber;
+    }
+
+    public static void EndTutorial()
+    {
+        IsTutorial = false;
     }
 }
